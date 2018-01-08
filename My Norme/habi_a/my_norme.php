@@ -1,5 +1,5 @@
 <?php
-function my_define($file, $lines, $line, &$nb_error)
+function	func_define($file, $lines, $line, &$nb_error)
 {
     if (preg_match("/#define/", $lines))
     {
@@ -12,7 +12,7 @@ function my_define($file, $lines, $line, &$nb_error)
 
 }
 
-function my_declare($file, $lines, $line, &$nb_error)
+function	func_declare($file, $lines, $line, &$nb_error)
 {
     if (preg_match("/[a-z]+\s+\w+\s?=\s?\"?'?\w+\"?'?;$/", $lines))
     {
@@ -21,21 +21,29 @@ function my_declare($file, $lines, $line, &$nb_error)
     }
 }
 
-function my_column($file, $lines, $line, &$nb_error)
+function	func_column($file, $lines, $line, &$nb_error)
 {
-    if (strlen($lines) > 80)
+    if (strlen($lines) >= 81)
     {
-        echo "\e[0;31mErreur:\e[0;34m $file: ligne $line:\e[0;m Ligne de plus de 80 caractères.\n";
+        echo "\e[0;31mErreur:\e[0;34m $file: ligne $line:\e[0;m ligne de plus de 80 caractères.\n";
         $nb_error++;
     }
 }
 
-function my_tab_declare($file, $lines, $line, &$nb_error)
+function	func_space_end($file, $lines, $line, &$nb_error)
+{
+    if (preg_match("/ \s+$/", "$lines"))
+    {
+        echo "\e[0;31mErreur :\e[0;34m $file: ligne $line:\e[0;m espace en fin de ligne.\n";
+        $nb_error++;
+    }
+}	
+
+function	func_tab_declare($file, $lines, $line, &$nb_error)
 {
     ;
 }
 
-// Gestion d'erreur pour l'argument spécifié
 if (!file_exists($argv[1]))
     echo "\e[0;36m" . "$argv[1]" . ":\e[0;m Le chemin spécifié est un introuvable.\n";
 else if (!is_dir($argv[1]))
@@ -44,7 +52,6 @@ else if (!is_readable($argv[1]))
     echo "\e[0;36m" . "$argv[1]" . ":\e[0;m L'accès au chemin spécifié est refusé.\n";
 else
 {
-    // Scan des fichiers présents dans le dossier
     $i = 2;
     $files = scandir($argv[1]);
     $nb_error = 0;
@@ -67,9 +74,10 @@ else
                 while (!feof($handle))
                 {
                     $lines = fgets($handle);
-                    my_column($file, $lines, $line, $nb_error);
-                    my_declare($file, $lines, $line, $nb_error);
-                    my_define($file, $lines, $line, $nb_error);
+                    func_column($file, $lines, $line, $nb_error);
+                    func_declare($file, $lines, $line, $nb_error);
+                    func_define($file, $lines, $line, $nb_error);
+		    func_space_end($file, $lines, $line, $nb_error);
                     $line++;
                 }
             }
