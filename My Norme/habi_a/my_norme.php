@@ -29,6 +29,12 @@ function func_check_path($argv)
     return (true);
 }
 
+function func_count_number(&$struct)
+{
+    if (preg_match("#\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\s+(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
+        $struct['function_number']++;
+}
+
 function	func_column(&$struct)
 {
     if (strlen($struct['lines']) >= 81)
@@ -74,7 +80,7 @@ function func_double_jump(&$struct)
     }
 }
 
-function func_function(&$struct)
+function func_function_line(&$struct)
 {
     if ($struct['bracket'] != 0 && $struct['function'] == true)
         $struct['function_line']++;
@@ -99,6 +105,15 @@ function func_function(&$struct)
         $struct['function'] = false;
     }
 
+}
+
+function func_function_number($struct)
+{
+    if ($struct['function_number'] >= 6)
+    {
+        echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m plus de 5 fonctions dans le fichier.\n";
+        $struct['nb_error']++;
+    }
 }
 
 function func_include(&$struct)
@@ -140,16 +155,18 @@ function func_scan_file($file, $handle, &$struct)
     {
         $struct['lines'] = fgets($handle);
         func_column($struct);
+        func_count_number($struct);
         func_declare($struct);
         func_define($struct);
         func_double_jump($struct);
-        func_function($struct);
+        func_function_line($struct);
         func_include($struct);
         func_space_end($struct);
         func_space_keyword($struct);
         func_tab_declare($struct);
         $struct['line']++;
     }
+    func_function_number($strict);
 }
 
 function	func_space_end(&$struct)
@@ -195,6 +212,7 @@ function func_struct($file)
         'jump' => false,
         'function' => false,
         'function_line' => 0,
+        'function_number' => 0,
         'bracket' => 0
     ];
     return ($struct);
