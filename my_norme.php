@@ -78,8 +78,13 @@ function func_function(&$struct)
 {
     if ($struct['bracket'] != 0 && $struct['function'] == true)
         $struct['function_line']++;
-    if (preg_match("#[a-z]+\s+\w+\(#", $struct['lines']))
+    if (preg_match("#\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\s+(\w+)\s*\([^)]*\)\s*$#", $struct['lines']))
         $struct['function'] = true;
+    else if (preg_match("#\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\s+(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
+    {
+        $struct['function'] = true;
+        $struct['bracket']++;
+    }
     else if (trim($struct['lines']) == '{' && $struct['function'] == true)
         $struct['bracket']++;
     else if (trim($struct['lines']) == '}' && $struct['function'] == true)
@@ -197,9 +202,9 @@ function func_struct($file)
 
 function	func_tab_declare(&$struct)
 {
-    if (preg_match("#[a-z]+\s+\w+;$|[a-z]+\s+\w+\(#", $struct['lines']))
+    if (preg_match("#[a-z]+\s+\w+;$|\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\s+(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
     {
-        if (!preg_match("#[a-z]+\t\w+;$|[a-z]+\t\w+\(#", $struct['lines']))
+        if (!preg_match("#[a-z]+\t\w+;$|\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\t(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
         {
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m tabulations manquantes dans la déclaration.\n";
             $struct['nb_error']++;
