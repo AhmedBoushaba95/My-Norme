@@ -40,7 +40,7 @@ function	func_check_path($argc, $argv)
 
 function	func_count_number(&$struct)
 {
-    if (preg_match("#\w+\s+\w+\s*\([^)]*\)({)?$#", $struct['lines']))
+    if (preg_match("#\w+\s+\w+\s*\([^)]*\)(\s+)?({)?$#", $struct['lines']))
         $struct['function_number']++;
 }
 
@@ -101,16 +101,16 @@ function	func_function_line(&$struct)
         $struct['function_line']++;
     if (preg_match("#\w+\s+\w+\s*\([^)]*\)$#", $struct['lines']))
         $struct['function'] = true;
-    else if (preg_match("#\w+\s+\w+\s*\([^)]*\)({)?$#", $struct['lines']))
+    elseif (preg_match("#\w+\s+\w+\s*\([^)]*\)(\s+)?({)?$#", $struct['lines']))
     {
         $struct['function'] = true;
         $struct['bracket']++;
     }
-    else if (trim($struct['lines']) == '{' && $struct['function'] == true)
+    elseif (trim($struct['lines']) == '{' && $struct['function'] == true)
         $struct['bracket']++;
-    else if (trim($struct['lines']) == '}' && $struct['function'] == true)
+    elseif (trim($struct['lines']) == '}' && $struct['function'] == true)
         $struct['bracket']--;
-    else if ($struct['bracket'] == 0 && $struct['function'] == true)
+    elseif ($struct['bracket'] == 0 && $struct['function'] == true)
     {
         if ($struct['function_line'] >= 21)
         {
