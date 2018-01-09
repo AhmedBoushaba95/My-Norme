@@ -76,15 +76,15 @@ function func_double_jump(&$struct)
 
 function func_function(&$struct)
 {
-    if ($struct['bracker'] != 0 && $struct['function'] == true)
+    if ($struct['bracket'] != 0 && $struct['function'] == true)
         $struct['function_line']++;
-    if (preg_match("#[a-z]+\s+\w+;$#", $struct['lines']))
+    if (preg_match("#[a-z]+\s+\w+\(#", $struct['lines']))
         $struct['function'] = true;
-    else if (trim($struct[$lines]) == '{' && $struct['function'] == true)
+    else if (trim($struct['lines']) == '{' && $struct['function'] == true)
         $struct['bracket']++;
-    else if (trim($struct[$lines]) == '}' && $struct['function'] == true)
+    else if (trim($struct['lines']) == '}' && $struct['function'] == true)
         $struct['bracket']--;
-    else if ($struct['bracker'] == 0 && $struct['function'] == true)
+    else if ($struct['bracket'] == 0 && $struct['function'] == true)
     {
         if ($struct['function_line'] >= 21)
         {
@@ -197,9 +197,9 @@ function func_struct($file)
 
 function	func_tab_declare(&$struct)
 {
-    if (preg_match("#[a-z]+\s+\w+;$#", $struct['lines']))
+    if (preg_match("#[a-z]+\s+\w+;$|[a-z]+\s+\w+\(#", $struct['lines']))
     {
-        if (!preg_match("#[a-z]+\t\w+;$#", $struct['lines']))
+        if (!preg_match("#[a-z]+\t\w+;$|[a-z]+\t\w+\(#", $struct['lines']))
         {
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m tabulations manquantes dans la déclaration.\n";
             $struct['nb_error']++;
@@ -227,6 +227,7 @@ if (func_check_path($argv))
                 // On commence le scan du fichier
                 func_scan_file($file, $handle, $struct);
             }
+            fclose($handle);
         }
         $i++;
         echo "\n";
