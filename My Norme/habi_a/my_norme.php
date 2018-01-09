@@ -119,7 +119,7 @@ function	func_function_line(&$struct)
 {
     if ($struct['bracket'] != 0 && $struct['function'] == true)
         $struct['function_line']++;
-    if (preg_match("#\w+\s+\w+\s*\([^)]*\)$#", $struct['lines']))
+    if (preg_match("#\w+\s+\w+\s*\([^)]*\)(\s+)?$#", $struct['lines']))
         $struct['function'] = true;
     elseif (preg_match("#\w+\s+\w+\s*\([^)]*\)(\s+)?({)?$#", $struct['lines']))
     {
@@ -156,7 +156,7 @@ function	func_function_number($struct)
 
 function	func_include(&$struct)
 {
-    if (preg_match("@#include@", $struct['lines']))
+    if (preg_match("@#(\s+)?(include)@", $struct['lines']))
     {
         $pattern = "@#include\s\"\w+.h\"|#include\s<\w+.h>@";
         if (!preg_match($pattern, $struct['lines']))
