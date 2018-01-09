@@ -9,9 +9,14 @@ function func_check_extension($file)
     return (true);
 }
 
-function func_check_path($argv)
+function func_check_path($argc, $argv)
 {
-    if (!file_exists($argv[1]))
+    if ($argc != 2)
+    {
+	echo "\e[0;31m" . "Usage" . ":\e[0;m php my_norme.php <path>.\n";
+	return (false);
+    }
+    else if (!file_exists($argv[1]))
     {
         echo "\e[0;37m" . "$argv[1]" . ":\e[0;m Le chemin spécifié est un introuvable.\n";
         return (false);
@@ -102,6 +107,7 @@ function func_function_line(&$struct)
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m fonction de plus de 25 lignes.\n";
             $struct['nb_error']++;
         }
+        $struct['function_line'] = 0;
         $struct['function'] = false;
     }
 
@@ -128,28 +134,42 @@ function func_include(&$struct)
     }
 }
 
+function func_initialise_struct(&$struct, $file)
+{
+    $struct['file'] = $file;
+    $struct['line'] = 1;
+    $struct['lines'] = '';
+    $struct['jump'] = false;
+    $struct['function'] = false;
+    $struct['function_line'] = 0;
+    $struct['function_number'] = 0;
+    $struct['bracket'] = 0;
+}
+
 function func_keywords()
 {
-    $keywords = ['auto', 'break', 'case','char', 'const', 'continue',
-        'default', 'do', 'double', 'else' ,'enum' , 'extern',
-        'float', 'for', 'goto', 'if', 'int', 'long', 'register',
-        'return', 'short', 'signed', 'sizeof', 'static', 'struct', 'switch',
-        'typedef', 'union', 'unsigned', 'void', 'volatile', 'while'];
+    $keywords = ['auto', 'break', 'case', 'continue',
+        'default', 'do','else' ,'enum' , 'extern',
+        'for', 'goto', 'if', 'register',
+        'return', 'struct', 'switch',
+        'typedef', 'union', 'volatile', 'while'];
     return ($keywords);
 }
 
 function func_print_result(&$struct)
 {
-    if ($struct['nb_error'] == 0)
-        echo "Vous avez fait \e[0;32m" . $struct['nb_error'] . "\e[0;m faute de norme.\n";
-    else
-        echo "Vous avez fait \e[0;31m" . $struct['nb_error'] . "\e[0;m faute(s) de norme.\n";
+    if (isset($struct['nb_error']))
+    {
+	if ($struct['nb_error'] == 0)
+           echo "Vous avez fait \e[0;32m" . $struct['nb_error'] . "\e[0;m faute de norme.\n";
+    	else
+           echo "Vous avez fait \e[0;31m" . $struct['nb_error'] . "\e[0;m faute(s) de norme.\n";
+    }
 }
 
 function func_scan_file($file, $handle, &$struct)
 {
-
-    $struct = func_struct($file);
+    func_initialise_struct($struct, $file);
     echo "\e[0;33mScan : \e[0;m" . "$file" . "\n";
     while (!feof($handle))
     {
@@ -166,7 +186,7 @@ function func_scan_file($file, $handle, &$struct)
         func_tab_declare($struct);
         $struct['line']++;
     }
-    func_function_number($strict);
+    func_function_number($struct);
 }
 
 function	func_space_end(&$struct)
@@ -202,10 +222,9 @@ function func_space_keyword(&$struct)
     }
 }
 
-function func_struct($file)
+function func_struct()
 {
     $struct = [
-        'file' => $file,
         'line' => 1,
         'lines' => '',
         'nb_error' => 0,
@@ -220,9 +239,12 @@ function func_struct($file)
 
 function	func_tab_declare(&$struct)
 {
-    if (preg_match("#[a-z]+\s+\w+;$|\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\s+(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
+    $pattern_one = '"#[a-z]+\s+\w+;$|\s*(unsigned|signed)?(\s|)?(void|int|char|';
+    $pattern_two = 'short|long|float|double)\s+(\w+)\s*\([^)]*\)(\s|{)?$#"';
+    $pattern = $pattern_one . $pattern_two;
+    if (preg_match($pattern, $struct['lines']))
     {
-        if (!preg_match("#[a-z]+\t\w+;$|\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\t(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
+        if (!preg_match("#[a-z]+\t+\w+;$|\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\t+(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
         {
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m tabulations manquantes dans la déclaration.\n";
             $struct['nb_error']++;
@@ -231,11 +253,11 @@ function	func_tab_declare(&$struct)
 }
 
 /* Beginning */
-if (func_check_path($argv))
+if (func_check_path($argc, $argv))
 {
     $i = 2;
     $files = scandir($argv[1]);
-    $struct = [];
+    $struct = func_struct();
     while (isset($files[$i]))
     {
         $file = $files[$i];
