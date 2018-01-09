@@ -1,5 +1,5 @@
 <?php
-function func_check_extension($file)
+function	func_check_extension($file)
 {
     if (!preg_match("#\w+[/\w+[.][c|h?]\z#", $file))
     {
@@ -10,7 +10,7 @@ function func_check_extension($file)
     return (true);
 }
 
-function func_check_path($argc, $argv)
+function	func_check_path($argc, $argv)
 {
     if ($argc != 2)
     {
@@ -38,9 +38,9 @@ function func_check_path($argc, $argv)
     return (true);
 }
 
-function func_count_number(&$struct)
+function	func_count_number(&$struct)
 {
-    if (preg_match("#\s*(unsigned|signed)?(\s|)?(void|int|char|short|long|float|double)\s+(\w+)\s*\([^)]*\)(\s|{)?$#", $struct['lines']))
+    if (preg_match("#\w+\s+\w+\s*\([^)]*\)({)?$#", $struct['lines']))
         $struct['function_number']++;
 }
 
@@ -56,7 +56,7 @@ function	func_column(&$struct)
 
 function	func_define(&$struct)
 {
-    if (preg_match("@#define@", $struct['lines']))
+    if (preg_match("@#(\s+)?(define)@", $struct['lines']))
     {
         if (preg_match("#\w+[/\w+[.][c]\z#", $struct['file']))
         {
@@ -70,7 +70,8 @@ function	func_define(&$struct)
 
 function	func_declare(&$struct)
 {
-    if (preg_match("#[a-z]+\s+\w+\s?=\s?\"?'?\w+\"?'?;$#", $struct['lines']))
+    $pattern = "#\w+\s+\w+(\s+)?=(\s+)?('|\")?\w+(\"|')?(\s+)?;$#";
+    if (preg_match($pattern,$struct['lines']))
     {
         echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " .
             $struct['line'] .
@@ -79,7 +80,7 @@ function	func_declare(&$struct)
     }
 }
 
-function func_double_jump(&$struct)
+function	func_double_jump(&$struct)
 {
     if (trim($struct['lines']) != '' && $struct['jump'] == true)
         $struct['jump'] = false;
@@ -94,13 +95,13 @@ function func_double_jump(&$struct)
     }
 }
 
-function func_function_line(&$struct)
+function	func_function_line(&$struct)
 {
     if ($struct['bracket'] != 0 && $struct['function'] == true)
         $struct['function_line']++;
-    if (preg_match("#\s*(\w+)?(\s*)?\w+\s+\w+\s*\([^)]*\)$#", $struct['lines']))
+    if (preg_match("#\w+\s+\w+\s*\([^)]*\)$#", $struct['lines']))
         $struct['function'] = true;
-    else if (preg_match("#\s*(\w+)?(\s*)?\w+\s+\w+\s*\([^)]*\)({)?$#", $struct['lines']))
+    else if (preg_match("#\w+\s+\w+\s*\([^)]*\)({)?$#", $struct['lines']))
     {
         $struct['function'] = true;
         $struct['bracket']++;
@@ -123,21 +124,22 @@ function func_function_line(&$struct)
 
 }
 
-function func_function_number($struct)
+function	func_function_number($struct)
 {
     if ($struct['function_number'] >= 6)
     {
-        echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " .
-            $struct['line'] . ":\e[0;m plus de 5 fonctions dans le fichier\n";
+        echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] .
+            ":\e[0;m plus de 5 fonctions dans le fichier\n";
         $struct['nb_error']++;
     }
 }
 
-function func_include(&$struct)
+function	func_include(&$struct)
 {
     if (preg_match("@#include@", $struct['lines']))
     {
-        if (!preg_match("@#include\s\"\w+.h\"|#include\s<\w+.h>@", $struct['lines']))
+        $pattern = "@#include\s\"\w+.h\"|#include\s<\w+.h>@";
+        if (!preg_match($pattern, $struct['lines']))
         {
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " .
                 $struct['line'] . ":\e[0;m mauvais include\n";
@@ -146,7 +148,7 @@ function func_include(&$struct)
     }
 }
 
-function func_initialise_struct(&$struct, $file)
+function	func_initialise_struct(&$struct, $file)
 {
     $struct['file'] = $file;
     $struct['line'] = 1;
@@ -158,7 +160,7 @@ function func_initialise_struct(&$struct, $file)
     $struct['bracket'] = 0;
 }
 
-function func_keywords()
+function	func_keywords()
 {
     $keywords = ['auto', 'break', 'case', 'continue',
         'default', 'do','else' ,'enum' , 'extern',
@@ -168,7 +170,7 @@ function func_keywords()
     return ($keywords);
 }
 
-function func_print_result(&$struct)
+function	func_print_result(&$struct)
 {
     if (isset($struct['nb_error']))
     {
@@ -181,7 +183,7 @@ function func_print_result(&$struct)
     }
 }
 
-function func_scan_file($file, $handle, &$struct)
+function	func_scan_file($file, $handle, &$struct)
 {
     func_initialise_struct($struct, $file);
     echo "\e[0;33mScan : \e[0;m" . "$file" . "\n";
@@ -213,7 +215,7 @@ function	func_space_end(&$struct)
     }
 }	
 
-function func_space_keyword(&$struct)
+function	func_space_keyword(&$struct)
 {
     $i = 0;
     $no_space = false;
@@ -238,7 +240,7 @@ function func_space_keyword(&$struct)
     }
 }
 
-function func_struct()
+function	func_struct()
 {
     $struct = [
         'line' => 1,
@@ -264,10 +266,10 @@ function	func_tab_declare(&$struct)
             $key_here = true;
         $i++;
     }
-    $pattern_func = "#\s*(\w+)?(\s*)?\w+\s+\w+(\s+)?;$|" .
-        "\s*(\w+)?(\s*)?\w+\s+\w+\s*\([^)]*\)({|;)?$#";
-    $pattern_func_tab = "#\s*(\w+)?(\s*)?\w+\t+\w+(\s+)?;$|" .
-        "\s*(\w+)?(\s*)?\w+\t+\w+\s*\([^)]*\)({|;)?$#";
+    $pattern_func = "#\w+\s+\w+(\s+)?;$|" .
+        "\w+\s+\w+\s*\([^)]*\)({|;)?$#";
+    $pattern_func_tab = "#\w+\t+\w+(\s+)?;$|" .
+        "\w+\t+\w+\s*\([^)]*\)({|;)?$#";
     if (preg_match($pattern_func, $struct['lines']) && !$key_here)
     {
         if (!preg_match($pattern_func_tab, $struct['lines']))
@@ -294,7 +296,10 @@ if (func_check_path($argc, $argv))
         {
             $handle = fopen($full_file, "r");
             if (!$handle)
-                echo "\e[0;36m" . "$file" . ":\e[0;m Echec lors de l'ouverture du fichier.\n";
+            {
+                echo "\e[0;36m" . "$file" .
+                 ":\e[0;m Echec lors de l'ouverture du fichier.\n";
+            }
             else
             {
                 // On commence le scan du fichier
