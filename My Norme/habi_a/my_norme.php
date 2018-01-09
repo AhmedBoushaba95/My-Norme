@@ -95,6 +95,26 @@ function	func_double_jump(&$struct)
     }
 }
 
+function    func_function_argument(&$struct)
+{
+    if (preg_match("#\w+\s+\w+\s*\([^)]*\)(\s+)?({)?$#", $struct['lines']))
+    {
+        $i = 0;
+        preg_match_all("#,#", $struct['lines'], $matches);
+        while (isset($matches[0][$i]))
+        {
+            $i++;
+        }
+        if ($i >= 4)
+        {
+            echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " .
+                        $struct['line'] .
+                        ":\e[0;m fonction avec plus de 4 arguments\n";
+            $struct['nb_error']++;
+        }
+    }
+}
+
 function	func_function_line(&$struct)
 {
     if ($struct['bracket'] != 0 && $struct['function'] == true)
@@ -195,6 +215,7 @@ function	func_scan_file($file, $handle, &$struct)
         func_declare($struct);
         func_define($struct);
         func_double_jump($struct);
+        func_function_argument($struct);
         func_function_line($struct);
         func_include($struct);
         func_space_end($struct);
