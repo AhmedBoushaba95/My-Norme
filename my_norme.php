@@ -62,16 +62,38 @@ function	func_declare(&$struct)
 
 function func_double_jump(&$struct)
 {
-    if (ltrim($struct['lines']) != '' && $struct['jump'] == true)
+    if (trim($struct['lines']) != '' && $struct['jump'] == true)
         $struct['jump'] = false;
-    else if (ltrim($struct['lines']) == '' && $struct['jump'] == false)
+    else if (trim($struct['lines']) == '' && $struct['jump'] == false)
         $struct['jump'] = true;
-    else if (ltrim($struct['lines']) == '' && $struct['jump'] == true)
+    else if (trim($struct['lines']) == '' && $struct['jump'] == true)
     {
         echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m double saut de ligne.\n";
         $struct['nb_error']++;
         $struct['jump'] = false;
     }
+}
+
+function func_function(&$struct)
+{
+    if ($struct['bracker'] != 0 && $struct['function'] == true)
+        $struct['function_line']++;
+    if (preg_match("#[a-z]+\s+\w+;$#", $struct['lines']))
+        $struct['function'] = true;
+    else if (trim($struct[$lines]) == '{' && $struct['function'] == true)
+        $struct['bracket']++;
+    else if (trim($struct[$lines]) == '}' && $struct['function'] == true)
+        $struct['bracket']--;
+    else if ($struct['bracker'] == 0 && $struct['function'] == true)
+    {
+        if ($struct['function_line'] >= 21)
+        {
+            echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " . $struct['line'] . ":\e[0;m fonction de plus de 25 lignes.\n";
+            $struct['nb_error']++;
+        }
+        $struct['function'] = false;
+    }
+
 }
 
 function func_include(&$struct)
@@ -116,6 +138,7 @@ function func_scan_file($file, $handle, &$struct)
         func_declare($struct);
         func_define($struct);
         func_double_jump($struct);
+        func_function($struct);
         func_include($struct);
         func_space_end($struct);
         func_space_keyword($struct);
@@ -159,13 +182,15 @@ function func_space_keyword(&$struct)
 
 function func_struct($file)
 {
-    $line = 1;
-    $nb_error = 0;
     $struct = [
         'file' => $file,
-        'line' => $line,
-        'nb_error' => $nb_error,
-        'jump' => false
+        'line' => 1,
+        'lines' => '',
+        'nb_error' => 0,
+        'jump' => false,
+        'function' => false,
+        'function_line' => 0,
+        'bracket' => 0
     ];
     return ($struct);
 }
