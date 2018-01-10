@@ -109,7 +109,7 @@ function    func_function_argument(&$struct)
         {
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " .
                         $struct['line'] .
-                        ":\e[0;m fonction avec plus de 4 arguments\n";
+                        ":\e[0;m fonction avec plus de 4 paramètres\n";
             $struct['nb_error']++;
         }
     }
@@ -144,7 +144,7 @@ function	func_function_line(&$struct)
 
 }
 
-function	func_function_number($struct)
+function	func_function_number(&$struct)
 {
     if ($struct['function_number'] >= 6)
     {
