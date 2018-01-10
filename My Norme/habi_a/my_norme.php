@@ -249,7 +249,7 @@ function	func_header_three(&$struct)
 {
     if ($struct['line'] == 7)
     {
-        $pattern = "#^(\*\*) Started on  \w{3} \w{3} [0-9]+ " .
+        $pattern = "#^(\*\*) Started on  \w{3} \w{3}(\s)+[0-9]+ " .
             "[0-9]{2}[:][0-9]{2}[:][0-9]{2} [0-9]{4} .+$#";
         if(!preg_match($pattern, $struct['lines']))
             $struct['bad_header'] = true;
