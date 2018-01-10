@@ -23,24 +23,24 @@ function	func_check_path($argc, $argv)
 {
     if ($argc != 2)
     {
-	    echo "\e[0;31m" . "Usage" . ":\e[0;m php my_norme.php 'path'.\n";
+	    echo "\e[0;35m" . "Usage" . ":\e[0;m php my_norme.php 'path'.\n";
 	    return (false);
     }
     else if (!file_exists($argv[1]))
     {
-        echo "\e[0;37m" . "$argv[1]" .
+        echo "\e[0;35m" . "$argv[1]" .
             ":\e[0;m Le chemin spécifié est un introuvable.\n";
         return (false);
     }
     else if (!is_dir($argv[1]))
     {
-        echo "\e[0;37m" . "$argv[1]" .
+        echo "\e[0;35m" . "$argv[1]" .
             ":\e[0;m Le chemin spécifié n'est pas un dossier.\n";
         return (false);
     }
     else if (!is_readable($argv[1]))
     {
-        echo "\e[0;37m" . "$argv[1]" .
+        echo "\e[0;35m" . "$argv[1]" .
             ":\e[0;m L'accès au chemin spécifié est refusé.\n";
         return (false);
     }
@@ -481,10 +481,7 @@ if (func_check_path($argc, $argv))
                  ":\e[0;m Echec lors de l'ouverture du fichier.\n";
             }
             else
-            {
-                // On commence le scan du fichier
                 func_scan_file($file, $handle, $struct);
-            }
             fclose($handle);
         }
         $i++;
