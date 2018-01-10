@@ -191,6 +191,21 @@ function	func_function_number(&$struct)
     }
 }
 
+function	func_function_header(&$struct)
+{
+    $bad_header = false;
+    if ($struct['line'] == 1)
+    {
+        if(!preg_match("#^(\/\*)$#", $struct['lines']))
+            $bad_header = true;
+    }
+    if ($struct['line'] == 2)
+    {
+        if(!preg_match("#^(\/\*)$#", $struct['lines']))
+            $bad_header = true;
+    }
+}
+
 function	func_include(&$struct)
 {
     if (preg_match("@#(\s+)?(include)@", $struct['lines']))
