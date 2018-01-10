@@ -200,18 +200,83 @@ function	func_function_number(&$struct)
     }
 }
 
-function	func_function_header(&$struct)
+function	func_header(&$struct)
 {
-    $bad_header = false;
+
     if ($struct['line'] == 1)
     {
         if(!preg_match("#^(\/\*)$#", $struct['lines']))
-            $bad_header = true;
+            $struct['bad_header'] = true;
     }
     if ($struct['line'] == 2)
     {
-        if(!preg_match("#^(\/\*)$#", $struct['lines']))
-            $bad_header = true;
+        $pattern_two = "#^\*\* \w+[.][c|h] for \S+ in \S+$#";
+        if(!preg_match($pattern_two, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    if ($struct['line'] == 3)
+    {
+        $pattern_two = "#^(\*\*) $#";
+        if(!preg_match($pattern_two, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    func_header_two($struct);
+}
+
+function	func_header_two(&$struct)
+{
+    if ($struct['line'] == 4)
+    {
+        if(!preg_match("#^(\*\*) Made by .+$#", $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    if ($struct['line'] == 5)
+    {
+        $pattern_two = "#^(\*\*) Login    <\S+[_]\S+[@]etna-alternance.net>$#";
+        if(!preg_match($pattern_two, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    if ($struct['line'] == 6)
+    {
+        $pattern_two = "#^(\*\*) $#";
+        if(!preg_match($pattern_two, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    func_header_three($struct);
+}
+
+function	func_header_three(&$struct)
+{
+    if ($struct['line'] == 7)
+    {
+        $pattern = "#^(\*\*) Started on   \w{3} \w{3} [0-9]+ " .
+            "[0-9]{2}[:][0-9]{2}[:][0-9]{2} [0-9]{4} .+$#";
+        if(!preg_match($pattern, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    if ($struct['line'] == 8)
+    {
+        $pattern_two = "#^(\*\*) Last Update   \w{3} \w{3} [0-9]+ " .
+            "[0-9]{2}[:][0-9]{2}[:][0-9]{2} [0-9]{4} .+$#";
+        if(!preg_match($pattern_two, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    if ($struct['line'] == 9)
+    {
+        $pattern_two = "#^(\*\/) $#";
+        if(!preg_match($pattern_two, $struct['lines']))
+            $struct['bad_header'] = true;
+    }
+    func_header_four($struct);
+}
+
+function	func_header_four(&$struct)
+{
+    if ($struct['bad_header'] && !$struct['stop_header'])
+    {
+        echo "\e[0;31mTRICHE: MAUVAIS HEADER\e[0;m\n";
+        $struct['nb_error']++;
+        $struct['stop_header'] = true;
     }
 }
 
@@ -241,6 +306,8 @@ function	func_initialise_struct(&$struct, $file)
     $struct['function_number'] = 0;
     $struct['declare'] = 0;
     $struct['bracket'] = 0;
+    $struct['$bad_header'] = false;
+    $struct['stop_header'] = false;
 }
 
 function	func_keywords()
@@ -273,19 +340,23 @@ function	func_scan_file($file, $handle, &$struct)
     while (!feof($handle))
     {
         $struct['lines'] = fgets($handle);
-        func_column($struct);
-        func_count_function($struct);
-        func_declare($struct);
-        func_declare_jump($struct);
-        func_define($struct);
-        func_double_jump($struct);
-        func_function_argument($struct);
-        func_function_line($struct);
-        func_function_return($struct);
-        func_include($struct);
-        func_space_end($struct);
-        func_space_keyword($struct);
-        func_tab_declare($struct);
+        func_header($struct);
+        if ($struct['line'] > 9)
+        {
+            func_column($struct);
+            func_count_function($struct);
+            func_declare($struct);
+            func_declare_jump($struct);
+            func_define($struct);
+            func_double_jump($struct);
+            func_function_argument($struct);
+            func_function_line($struct);
+            func_function_return($struct);
+            func_include($struct);
+            func_space_end($struct);
+            func_space_keyword($struct);
+            func_tab_declare($struct);
+        }
         $struct['line']++;
     }
     func_function_number($struct);
@@ -338,7 +409,9 @@ function	func_struct()
         'function_line' => 0,
         'function_number' => 0,
         'declare' => false,
-        'bracket' => 0
+        'bracket' => 0,
+        'bad_header' => false,
+        'stop_header' => false
     ];
     return ($struct);
 }
