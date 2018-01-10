@@ -282,6 +282,7 @@ function	func_header_four(&$struct)
         echo "\e[0;31mTRICHE: MAUVAIS HEADER\e[0;m\n";
         $struct['nb_error']++;
         $struct['bad_header'] = false;
+        $struct['stop_header'] = true;
     }
 }
 
