@@ -232,7 +232,7 @@ function	func_header_two(&$struct)
     }
     if ($struct['line'] == 5)
     {
-        $pattern_two = "#^(\*\*) Login    <\S+[_]\S+[@]etna-alternance.net>$#";
+        $pattern_two = "#^(\*\*) Login   <\S+[_]\S+[@]etna-alternance.net>$#";
         if(!preg_match($pattern_two, $struct['lines']))
             $struct['bad_header'] = true;
     }
@@ -249,21 +249,21 @@ function	func_header_three(&$struct)
 {
     if ($struct['line'] == 7)
     {
-        $pattern = "#^(\*\*) Started on   \w{3} \w{3} [0-9]+ " .
+        $pattern = "#^(\*\*) Started on  \w{3} \w{3} [0-9]+ " .
             "[0-9]{2}[:][0-9]{2}[:][0-9]{2} [0-9]{4} .+$#";
         if(!preg_match($pattern, $struct['lines']))
             $struct['bad_header'] = true;
     }
     if ($struct['line'] == 8)
     {
-        $pattern_two = "#^(\*\*) Last Update   \w{3} \w{3} [0-9]+ " .
+        $pattern_two = "#^(\*\*) Last update \w{3} \w{3} [0-9]+ " .
             "[0-9]{2}[:][0-9]{2}[:][0-9]{2} [0-9]{4} .+$#";
         if(!preg_match($pattern_two, $struct['lines']))
             $struct['bad_header'] = true;
     }
     if ($struct['line'] == 9)
     {
-        $pattern_two = "#^(\*\/) $#";
+        $pattern_two = "#^(\*\/)$#";
         if(!preg_match($pattern_two, $struct['lines']))
             $struct['bad_header'] = true;
     }
