@@ -272,24 +272,33 @@ function	func_header_three(&$struct)
 
 function	func_header_four(&$struct)
 {
+    if ($struct['line'] == 10)
+    {
+        $struct['end_header'] = true;
+        $struct['stop_header'] = true;
+    }
     if ($struct['bad_header'] && !$struct['stop_header'])
     {
         echo "\e[0;31mTRICHE: MAUVAIS HEADER\e[0;m\n";
         $struct['nb_error']++;
         $struct['bad_header'] = false;
-        $struct['stop_header'] = true;
     }
 }
 
 function	func_include(&$struct)
 {
-    if (preg_match("@#(\s+)?(include)@", $struct['lines']))
+    if ($struct['end_header'])
     {
-        $pattern = "@#include\s\"\w+.h\"|#include\s<\w+.h>@";
-        if (!preg_match($pattern, $struct['lines']))
+        if(trim($struct['lines']) != '' &&
+            !preg_match("@#(\s+)?(include)@", $struct['lines']))
+            $struct['end_header'] = false;
+    }
+    else
+    {
+        if (preg_match("@#(\s+)?(include)@", $struct['lines']))
         {
             echo "\e[0;31mErreur:\e[0;34m " . $struct['file'] . ": ligne " .
-                $struct['line'] . ":\e[0;m mauvais include\n";
+                $struct['line'] . ":\e[0;m ordonnancement des includes\n";
             $struct['nb_error']++;
         }
     }
@@ -309,6 +318,7 @@ function	func_initialise_struct(&$struct, $file)
     $struct['bracket'] = 0;
     $struct['bad_header'] = false;
     $struct['stop_header'] = false;
+    $struct['end_header'] = false;
 }
 
 function	func_keywords()
@@ -342,6 +352,7 @@ function	func_scan_file($file, $handle, &$struct)
     {
         $struct['lines'] = fgets($handle);
         func_header($struct);
+        //var_dump($struct);
         if ($struct['line'] > 9)
         {
             func_column($struct);
@@ -412,7 +423,8 @@ function	func_struct()
         'declare' => false,
         'bracket' => 0,
         'bad_header' => false,
-        'stop_header' => false
+        'stop_header' => false,
+        'end_header' =>false
     ];
     return ($struct);
 }
