@@ -447,12 +447,17 @@ function	func_tab_declare(&$struct)
 if (func_check_path($argc, $argv))
 {
     $i = 2;
-    $files = scandir($argv[1]);
+    $path = $argv[1];
+    if ($path = '.')
+        $path .= '/';
+    elseif ($path = '..')
+        $path .= '/';
+    $files = scandir($path);
     $struct = func_struct();
     while (isset($files[$i]))
     {
         $file = $files[$i];
-        $full_file = "./" . $argv[1] . $file;
+        $full_file = "./" . $path . $file;
         if (func_check_extension($file))
         {
             $handle = fopen($full_file, "r");
