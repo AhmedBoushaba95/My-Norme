@@ -276,6 +276,7 @@ function	func_header_four(&$struct)
     {
         echo "\e[0;31mTRICHE: MAUVAIS HEADER\e[0;m\n";
         $struct['nb_error']++;
+        $struct['bad_header'] = false;
         $struct['stop_header'] = true;
     }
 }
@@ -306,7 +307,7 @@ function	func_initialise_struct(&$struct, $file)
     $struct['function_number'] = 0;
     $struct['declare'] = 0;
     $struct['bracket'] = 0;
-    $struct['$bad_header'] = false;
+    $struct['bad_header'] = false;
     $struct['stop_header'] = false;
 }
 
