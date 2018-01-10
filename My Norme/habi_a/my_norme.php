@@ -23,7 +23,7 @@ function	func_check_path($argc, $argv)
 {
     if ($argc != 2)
     {
-	    echo "\e[0;31m" . "Usage" . ":\e[0;m php my_norme.php <path>.\n";
+	    echo "\e[0;31m" . "Usage" . ":\e[0;m php my_norme.php 'path'.\n";
 	    return (false);
     }
     else if (!file_exists($argv[1]))
