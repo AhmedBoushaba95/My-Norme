@@ -1,4 +1,13 @@
+#!/usr/bin/env php
 <?php
+// my_norme.php for my_norme in /home/habi/Documents/my_norme
+// 
+// Made by HABI Açal
+// Login   <habi_a@etna-alternance.net>
+// 
+// Started on  Wed Jan 10 12:04:59 2018 HABI Açal
+// Last update Wed Jan 10 12:05:33 2018 HABI Açal
+//
 function	func_check_extension($file)
 {
     if (!preg_match("#\w+[/\w+[.][c|h?]\z#", $file))
