@@ -1,10 +1,10 @@
 #!/usr/bin/env php
 <?php
 // my_norme.php for my_norme in /Users/habi_a/PhpstormProjects/my_norme
-// 
+//
 // Made by HABI Acal
 // Login   <habi_a@etna-alternance.net>
-// 
+//
 // Started on  Wed Jan 10 16:16:26 2018 HABI Acal
 // Last update Wed Jan 10 16:16:59 2018 HABI Acal
 //
@@ -383,7 +383,7 @@ function	func_space_end(&$struct)
             $struct['line'] . ":\e[0;m espace en fin de ligne\n";
         $struct['nb_error']++;
     }
-}	
+}
 
 function	func_space_keyword(&$struct)
 {
@@ -462,10 +462,6 @@ if (func_check_path($argc, $argv))
 {
     $i = 2;
     $path = $argv[1];
-    if ($path = '.')
-        $path .= '/';
-    elseif ($path = '..')
-        $path .= '/';
     $files = scandir($path);
     $struct = func_struct();
     while (isset($files[$i]))
