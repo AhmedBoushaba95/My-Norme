@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
-// my_norme.php for my_norme in /Users/habi_a/PhpstormProjects/untitled/my_norme
+// my_norme.php for my_norme in /Users/habi_a/PhpstormProjects/my_norme
 // 
 // Made by HABI Açal
 // Login   <habi_a@etna-alternance.net>
 // 
-// Started on  Wed Jan 10 16:12:07 2018 HABI Açal
-// Last update Wed Jan 10 16:12:56 2018 HABI Açal
+// Started on  Wed Jan 10 16:14:02 2018 HABI Açal
+// Last update Wed Jan 10 16:14:45 2018 HABI Açal
 //
 function	func_check_extension($file)
 {
