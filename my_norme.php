@@ -2,11 +2,11 @@
 <?php
 // my_norme.php for my_norme in /Users/habi_a/PhpstormProjects/my_norme
 //
-// Made by HABI Acal
-// Login   <habi_a@etna-alternance.net>
+// Made by BOUSHABA Ahmed
+// Login   <bousha_a@etna-alternance.net>
 //
-// Started on  Wed Jan 10 16:16:26 2018 HABI Acal
-// Last update Wed Jan 10 16:16:59 2018 HABI Acal
+// Started on  Wed Jan 10 16:16:26 2018 BOUSHABA Ahmed
+// Last update Wed Jan 10 16:16:59 2018 BOUSHABA Ahmed
 //
 function	func_check_extension($file)
 {
